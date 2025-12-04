@@ -1,21 +1,25 @@
 package com.luxoft.flights.model;
 
+import jakarta.persistence.*;
 import java.util.Objects;
 
+@Entity
 public class Carrier {
-    private String code;
-    private String name;
+   @Id
+   private String code;
+   private String name;
 
-    public Carrier(String code) {
-        this.code = code;
-        if (code.equals("AA")) {
-            this.name = "America Airlines";
-        } else if (code.equals("WN")) {
-            this.name = "Southwest Airlines";
-        }
-    }
+   public Carrier() {
+   }
 
-    // getters and setters
+   public Carrier(String code) {
+       this.code = code;
+       if (code.equals("AA")) {
+           this.name = "America Airlines";
+       } else if (code.equals("WN")) {
+           this.name = "Southwest Airlines";
+       }
+   }
 
     public String getCode() {
         return code;
@@ -54,4 +58,3 @@ public class Carrier {
         return name;
     }
 }
-

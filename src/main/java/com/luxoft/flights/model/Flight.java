@@ -1,33 +1,55 @@
 package com.luxoft.flights.model;
 
+import jakarta.persistence.*;
 import java.util.Date;
 import java.util.Objects;
 
+@Entity
 public class Flight {
-    private String tailNum;
-    private Date flightDate;
-    private Airport origin;
-    private Airport destination;
-    private Carrier carrier;
-    private int depDelay;
-    private int arrDelay;
-    private int cancelled;
+   @Id
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   private Long id;
 
-    public Flight(String tailNum, Date flightDate, Airport origin,
-                  Airport destination, Carrier carrier,
-                  int depDelay, int arrDelay,
-                  int cancelled) {
-        this.tailNum = tailNum;
-        this.flightDate = flightDate;
-        this.origin = origin;
-        this.destination = destination;
-        this.carrier = carrier;
-        this.cancelled = cancelled;
-        this.depDelay = depDelay;
-        this.arrDelay = arrDelay;
+   private String tailNum;
+   private Date flightDate;
+
+   @ManyToOne
+   private Airport origin;
+
+   @ManyToOne
+   private Airport destination;
+
+   @ManyToOne
+   private Carrier carrier;
+
+   private int depDelay;
+   private int arrDelay;
+   private int cancelled;
+
+   public Flight(String tailNum, Date flightDate, Airport origin,
+                 Airport destination, Carrier carrier,
+                 int depDelay, int arrDelay,
+                 int cancelled) {
+       this.tailNum = tailNum;
+       this.flightDate = flightDate;
+       this.origin = origin;
+       this.destination = destination;
+       this.carrier = carrier;
+       this.cancelled = cancelled;
+       this.depDelay = depDelay;
+       this.arrDelay = arrDelay;
+   }
+
+   public Flight() {
+   }
+
+    public Long getId() {
+        return id;
     }
 
-    // getters and setters
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getTailNum() {
         return tailNum;
@@ -99,7 +121,7 @@ public class Flight {
         if (o == null || getClass() != o.getClass()) return false;
 
         Flight flight = (Flight) o;
-        return tailNum == flight.tailNum && Objects.equals(flightDate, flight.flightDate);
+        return Objects.equals(tailNum, flight.tailNum) && Objects.equals(flightDate, flight.flightDate);
     }
 
     @Override

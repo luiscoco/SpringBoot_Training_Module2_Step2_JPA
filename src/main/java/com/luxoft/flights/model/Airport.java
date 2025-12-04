@@ -1,15 +1,27 @@
 package com.luxoft.flights.model;
 
-public class Airport {
-    private int airportID;
-    private String airportCode;
-    private State state;
+import jakarta.persistence.*;
 
-    public Airport(int airportID, String airportCode, State state) {
-        this.airportID = airportID;
-        this.airportCode = airportCode;
-        this.state = state;
-    }
+@Entity
+public class Airport {
+   @Id
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   private int airportID;
+
+   private String airportCode;
+
+   @ManyToOne
+   @JoinColumn(name = "state_name")
+   private State state;
+
+   public Airport(int airportID, String airportCode, State state) {
+       this.airportID = airportID;
+       this.airportCode = airportCode;
+       this.state = state;
+   }
+
+   public Airport() {
+   }
 
     public int getAirportID() {
         return airportID;
@@ -54,4 +66,3 @@ public class Airport {
         return airportCode + " (" + state + ")";
     }
 }
-

@@ -1,13 +1,20 @@
 package com.luxoft.flights.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import java.util.Objects;
 
+@Entity
 public class State {
-    private String name;
+   @Id
+   private String name;
 
-    public State(String name) {
-        this.name = name;
-    }
+   public State() {
+   }
+
+   public State(String name) {
+       this.name = name;
+   }
 
     public String getName() {
         return name;
