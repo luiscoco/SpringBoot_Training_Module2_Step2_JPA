@@ -1,0 +1,11 @@
+com/luxoft/flights/model/Airport.class
+com/luxoft/flights/services/DBDataLoader.class
+com/luxoft/flights/model/State.class
+com/luxoft/flights/services/InMemoryDataService.class
+com/luxoft/flights/model/Flight.class
+com/luxoft/flights/services/DatabaseConnection.class
+com/luxoft/flights/model/Carrier.class
+com/luxoft/flights/services/DataService.class
+com/luxoft/flights/services/CSVDataLoader.class
+com/luxoft/flights/services/DataLoader.class
+com/luxoft/flights/FlightsApplication.class
