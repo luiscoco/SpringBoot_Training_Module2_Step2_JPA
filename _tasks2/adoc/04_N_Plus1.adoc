@@ -1,0 +1,98 @@
+= Understanding and Resolving the N+1 Problem in JPA
+
+The N+1 problem is a frequent performance issue in applications using ORM frameworks like JPA. This problem occurs when fetching a list of entities, and each entity fetches its related entities in separate queries, leading to performance degradation. This guide provides an explanation of the N+1 problem, its identification, and step-by-step instructions to resolve it.
+
+== What is the N+1 Problem?
+
+The N+1 problem occurs when an application executes one query to retrieve a list of entities (1 query) and then issues an additional query for each related entity (N queries), resulting in N+1 total queries. This can severely impact performance, especially with large datasets.
+
+== Identifying the N+1 Problem
+
+Consider a scenario where you want to list all airports and their associated states.
+
+[source,java]
+----
+public List<Airport> getAllAirports() {
+    return airportRepository.findAll();
+}
+----
+
+When you run this code, it generates SQL queries as follows:
+
+[source,sql]
+----
+select a1_0.airportid, a1_0.airport_code, a1_0.state_name from airport a1_0
+select s1_0.name from state s1_0 where s1_0.name=?
+select s1_0.name from state s1_0 where s1_0.name=?
+select s1_0.name from state s1_0 where s1_0.name=?
+----
+
+This shows one query to retrieve all airports, followed by individual queries to retrieve each airport's associated state. For N airports, the application executes N+1 queries, thus creating the N+1 problem.
+
+== Resolving the N+1 Problem: Step-by-Step Solution
+
+To resolve the N+1 problem, we can leverage **JOIN FETCH** in custom repository queries to load related entities in a single query.
+
+=== Create a Custom Fetch Query in the Repository
+
+In the `AirportRepository`, add a custom method using the **JOIN FETCH** clause. This query fetches both `Airport` and `State` entities in a single database call.
+
+[source,java]
+----
+@Repository
+public interface AirportRepository extends JpaRepository<Airport, Integer> {
+
+    @Query("SELECT a FROM Airport a JOIN FETCH a.state")
+    List<Airport> findAllWithState();
+}
+----
+
+=== Modify the Service Layer to Use the New Method
+
+In your service layer, replace the `findAll()` call with `findAllWithState()` to use the optimized query.
+
+[source,java]
+----
+@Service
+public class AirportService {
+
+    private final AirportRepository airportRepository;
+
+    public AirportService(AirportRepository airportRepository) {
+        this.airportRepository = airportRepository;
+    }
+
+    public List<Airport> getAllAirports() {
+        return airportRepository.findAllWithState();
+    }
+}
+----
+
+Using `findAllWithState()` ensures that all airports and their associated states are loaded in a single query, eliminating the N+1 issue.
+
+=== Test the Solution and Verify SQL Output
+
+Run the application and check the SQL output. You should see only one query loading both `Airport` and `State` data:
+
+[source,sql]
+----
+select a1_0.airportid, a1_0.airport_code, s1_0.name
+from airport a1_0
+join state s1_0 on a1_0.state_name = s1_0.name
+----
+
+This single query retrieves all airports along with their states, thus resolving the N+1 problem.
+
+== Benefits of Resolving the N+1 Problem
+
+- **Performance Optimization**: Reduces the number of queries and improves data access performance.
+- **Lower Database Load**: Fewer queries reduce the load on the database server.
+- **Improved Code Efficiency**: A single, optimized query is simpler and easier to maintain.
+
+== Additional Tips
+
+- **Use Lazy Loading Judiciously**: Set relationships to `FetchType.LAZY` by default and fetch related data only when needed.
+- **Fetch Join with Caution**: For complex relationships, use `JOIN FETCH` only on essential data to avoid unnecessary data retrieval.
+- **Consider DTOs for Custom Queries**: When you only need specific fields, use a DTO to fetch just the required data.
+
+By following these steps, you can eliminate the N+1 problem and optimize your application's database interactions.
